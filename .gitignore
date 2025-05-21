@@ -1,0 +1,18 @@
+# Игнорировать скомпилированные Python файлы
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Игнорировать виртуальное окружение
+venv/
+kanvenv/
+crispr-bert/
+
+reqs_kan.txt
+kan.ipynb
+
+data/bert_embeddings.csv
+
+*.h5
+*.keras
