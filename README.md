@@ -30,3 +30,54 @@ install.packages("package_name")
 ## Reinvorcement Learning
 
 Eastman et. al. (2018) [Solving the RNA design problem with reinforcement learning](https://doi.org/10.1371/journal.pcbi.1006176)
+
+A3C (Asynchronous Advantage Actor Critic)
+
+PPO (Proximal Policy Optimization), an architecture that improves our agent's training stability by avoiding too large policy updates.
+
+A3C typically achieves quicker training times, but exhibits greater instability in reward values. Conversely, PPO demonstrates a more stable training process at the expense of longer execution times
+
+## Ubuntu 20.04 on Windows
+
+На сайте https://store.rg-adguard.net/ вставить ссылку на Ubuntu из Microsoft Store, например:
+
+```ruby
+https://apps.microsoft.com/store/detail/ubuntu-2004-lts/9N6SVWS3RX71
+```
+
+и выбрать Retail
+
+ПКМ на файл с расширением .appxbundle -> Копировать адрес ссылки
+
+Скачать appxbundle через Git Bash:
+
+```bash
+curl -L "ВСТАВИТЬ ССЫЛКУ" -o ubuntu.appxbundle
+```
+
+В windows Powershell от имени администратора:
+
+```powershell
+Add-AppxPackage -Path "D:\path\to\ubuntu.appxbundle"
+```
+### Enable WSL
+
+В powershell от имени администратора:
+
+```powershell
+dism.exe /online /enable-feature /featurename:Microsoft-Windows-Subsystem-Linux /all /norestart
+```
+
+```powershell
+dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /norestart
+```
+
+### WSL 2
+
+Установить WSL 2 kernel по [ссылке](https://wslstorestorage.blob.core.windows.net/wslblob/wsl_update_x64.msi)
+
+В powershell от имени администратора:
+
+```powershell
+wsl --set-default-version 2
+```
