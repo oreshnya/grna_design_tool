@@ -2,8 +2,9 @@ import deepchem as dc
 import deepchem.models.tensorgraph.layers as layers
 import numpy as np
 import tensorflow as tf
-import RNA
+# import RNA
 import random
+import subprocess
 
 # This file defines the classes for the environment and the policy network, as well
 # as various useful functions.
@@ -29,10 +30,23 @@ def sequence_to_string(sequence):
     bases = ['A', 'C', 'G', 'U']
     return ''.join(bases[i] for i in sequence)
 
+# def sequence_to_bracket(sequence):
+#     """Compute the native structure (in dot bracket notation) of a one hot encoded sequence."""
+#     structure, energy = RNA.fold(sequence_to_string(sequence))
+#     return structure
+
 def sequence_to_bracket(sequence):
-    """Compute the native structure (in dot bracket notation) of a one hot encoded sequence."""
-    structure, energy = RNA.fold(sequence_to_string(sequence))
-    return structure
+    seq_str = sequence_to_string(sequence)
+    result = subprocess.run(
+        ['RNAfold'], input=seq_str.encode(), stdout=subprocess.PIPE, stderr=subprocess.DEVNULL
+    )
+    lines = result.stdout.decode().strip().split('\n')
+    if len(lines) >= 2:
+        struct_line = lines[1].strip().split()[0]
+        return struct_line
+    else:
+        raise RuntimeError(f"RNAfold failed on input: {seq_str}")
+
 
 class RNAEnvironment(dc.rl.Environment):
     """This class implements the environment our agent will interact with."""
@@ -146,16 +160,26 @@ def create_conv7(parent, length, indices, n_outputs):
     """Create a conv7 operation."""
     gather = GatherBonds(length, in_layers=[parent, indices])
     w = gather.shape[1]//length
-    return layers.Conv1D(width=w, stride=w, out_channels=n_outputs, in_layers=gather)
+    return layers.Conv1D(
+        width=w, stride=w,
+        out_channels=n_outputs,
+        activation_fn=tf.nn.relu,  # ← добавили
+        in_layers=gather
+    )
 
 
 def create_residual(parent, length, indices, n_outputs):
     """Create a residual block."""
     conv = create_conv7(parent, length, indices, n_outputs)
     flattened = layers.Flatten(conv)
-    return parent + layers.Conv1D(width=n_outputs, stride=n_outputs,
-        out_channels=n_outputs, activation_fn=None, weights_initializer=tf.zeros_initializer,
-        biases_initializer=tf.zeros_initializer, in_layers=flattened)
+    return parent + layers.Conv1D(
+        width=n_outputs, stride=n_outputs,
+        out_channels=n_outputs,
+        activation_fn=tf.nn.relu,  # ← исправили
+        weights_initializer=tf.zeros_initializer,
+        biases_initializer=tf.zeros_initializer,
+        in_layers=flattened
+    )
 
 
 class RNAPolicy(dc.rl.Policy):
@@ -178,7 +202,12 @@ class RNAPolicy(dc.rl.Policy):
         conv3 = create_residual(conv2, self.length, indices, width)
         conv4 = create_residual(conv3, self.length, indices, width)
         flattened_conv = layers.Flatten(in_layers=conv4)
-        action = layers.Flatten(layers.Conv1D(width=width, stride=width, out_channels=4, biases_initializer=tf.zeros_initializer, activation_fn=None, in_layers=flattened_conv))
+        action = layers.Flatten(layers.Conv1D(
+                                                width=width, stride=width, out_channels=4,
+                                                biases_initializer=tf.zeros_initializer,
+                                                activation_fn=tf.nn.relu,  # ← ✅ теперь всё ок
+                                                in_layers=flattened_conv
+                                            ))
         masked = layers.Add(in_layers=[action, layers.Flatten(in_layers=state[0])], weights=[1, -1e6])
         action_prob = layers.SoftMax(in_layers=masked)
         value = layers.Dense(out_channels=1, in_layers=flattened_conv)

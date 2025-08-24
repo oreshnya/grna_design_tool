@@ -1,6 +1,3 @@
-
-
-
 ## R
 
 Download R 4.3.2 from [official website](https://cran.r-project.org/bin/windows/base/old/)
