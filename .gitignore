@@ -16,3 +16,5 @@ data/bert_embeddings.csv
 
 *.h5
 *.keras
+
+commands.txt
