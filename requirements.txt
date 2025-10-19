@@ -3,4 +3,5 @@ pandas==2.2.2
 rpy2==3.5.11
 tensorflow==2.16.1
 regex==2025.7.34
+keras-bert==0.89.0
 biopython
