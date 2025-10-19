@@ -8,6 +8,7 @@ __pycache__/
 venv/
 kanvenv/
 crispr-bert/
+.venv-tf210/
 
 reqs_kan.txt
 kan.ipynb
@@ -17,4 +18,4 @@ data/bert_embeddings.csv
 *.h5
 *.keras
 
-commands.txt
+comparison.md
