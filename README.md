@@ -1,3 +1,33 @@
+## Структура проекта
+
+data/ - данные
+- DAK1_short.txt
+- DAK1.fasta
+- emx1.hg38.targets.txt - данные по off-targets, полученные из [CRISPRitz](https://github.com/pinellolab/CRISPRitz) по их тестовой последовательности gRNA на геноме человека
+- ExampleDAK1seq.txt
+- Table_S8_machine_learning_input.csv - данные для обучения relative activity predictor, источник: [Jost et. a. (2020) Titrating gene expression using libraries of systematically attenuated CRISPR guide RNAs](https://pmc.ncbi.nlm.nih.gov/articles/PMC7065968/) (см. Supplemantary materials)
+- genome_test_copy.fa
+- genome_test.fa
+
+
+energy/
+Модель для оценки энергии гибридизации РНК-ДНК, источник: [crisproff](https://github.com/RTH-tools/crisproff/tree/master)
+
+models/
+Модели, используемые в проекте
+
+- CRISPR_BERT/ - источник: [CRISPR-BERT](https://github.com/BrokenStringx/CRISPR-BERT)
+- Doench_2016/ - источник: [crispRdesignR](https://github.com/dylanbeeber/crispRdesignR)
+- RA_predictor/ - наша структура и веса
+
+modules/ 
+Почти все функции импортируются отсюда
+
+research_notes/
+- ea & validation.md - изыскания насчет вариантов исопльзования EA для дизайна/оптимизации РНК и возможности валидации полцченных последжовательностей
+- performance_baseline.md - предварительная оценка времени выоплнения отдельных компонентов планируемого пайплайна
+
+
 ## R
 
 Download R 4.3.2 from [official website](https://cran.r-project.org/bin/windows/base/old/)
