@@ -111,32 +111,3 @@ print('✅ ViennaRNA:', RNA.pf_fold('(....)'))
 cd /mnt/c/projects/a3c/SI
 
 python solve_one_puzzle.py "(((((((.(.(.(.(((((((....)))))))))))))))))"
-
-### check process
-в
-
-
-## Install libgfortran3 from xenial
-
-echo "deb http://security.ubuntu.com/ubuntu xenial-security main" | sudo tee /etc/apt/sources.list.d/xenial.list
-
-sudo apt update
-
-sudo apt install libgfortran3
-
-ls /usr/lib/x86_64-linux-gnu/libgfortran.so.3
-
-sudo rm /etc/apt/sources.list.d/xenial.list
-sudo apt update
-
-
-## Delete false RNA
-
-rm -rf $CONDA_PREFIX/lib/python3.6/site-packages/RNA
-
-python -c "import RNA" # должна быть ошибка
-
-conda install -c bioconda viennarna=2.3.5
-
-python -c "import RNA; print(RNA.__file__)"
-
