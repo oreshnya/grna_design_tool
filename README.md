@@ -1,34 +1,99 @@
-## Структура проекта
+> ℹ️ **Первым делом советую посмотреть презентации:**
+>
+> - [`research_notes/semester1.pdf`](https://github.com/oreshnya/grna_design_tool/blob/main/research_notes/semester1.pdf)
+> - [`research_notes/semester2.pdf`](https://github.com/oreshnya/grna_design_tool/blob/main/research_notes/semester2.pdf)
 
-data/ - данные
-- DAK1_short.txt
-- DAK1.fasta
-- emx1.hg38.targets.txt - данные по off-targets, полученные из [CRISPRitz](https://github.com/pinellolab/CRISPRitz) по их тестовой последовательности gRNA на геноме человека
-- ExampleDAK1seq.txt
-- Table_S8_machine_learning_input.csv - данные для обучения relative activity predictor, источник: [Jost et. a. (2020) Titrating gene expression using libraries of systematically attenuated CRISPR guide RNAs](https://pmc.ncbi.nlm.nih.gov/articles/PMC7065968/) (см. Supplemantary materials)
-- genome_test_copy.fa
-- genome_test.fa
+# 📁 Структура проекта
+
+### Отдельные файлы
+- `run.py` — минимальный "чистый" запуск основных частей пайплайна (без блокнотов)  
+- `RA_predictor_training.ipynb` — обучение модели *relative activity predictor*  
+- `main_process.ipynb` — старый блокнот с процессом (функции перенесены в `modules/core.py`, вызовы — в `run.py`)  
+- `ensemble.ipynb` — старое
+
+---
+
+### `data/`  
+- `DAK1_short.txt`
+- `DAK1.fasta`
+- `emx1.hg38.targets.txt` — данные по off-targets, полученные из [CRISPRitz](https://github.com/pinellolab/CRISPRitz) по их тестовой последовательности gRNA на геноме человека  
+- `ExampleDAK1seq.txt`  
+- `Table_S8_machine_learning_input.csv` — данные для обучения *relative activity predictor*, источник: [Jost et al. (2020) *Titrating gene expression using libraries of systematically attenuated CRISPR guide RNAs*](https://pmc.ncbi.nlm.nih.gov/articles/PMC7065968/#SM1)  
+- `genome_test_copy.fa`, `genome_test.fa` — тестовые фрагменты генома  
+
+---
+
+### `energy/`  
+Модель для оценки энергии гибридизации РНК–ДНК, источник: [crisproff](https://github.com/RTH-tools/crisproff/tree/master)
+
+---
+
+### `models/`  
+Модели, используемые в проекте  
+
+- `CRISPR_BERT/` — источник: [CRISPR-BERT](https://github.com/BrokenStringx/CRISPR-BERT)  
+- `Doench_2016/` — источник: [crispRdesignR](https://github.com/dylanbeeber/crispRdesignR)  
+- `RA_predictor/` — собственная модель (структура и веса)
+
+---
+
+### `modules/`  
+Почти все функции импортируются отсюда  
+
+- `core.py` — основные функции, не разнесённые по модулям  
+- `data_transformation.py` — обработка данных и схемы кодирования  
+- `energy_calc.py` — модуль для расчёта энергии гибридизации ДНК–РНК  
+- `model_evaluation.py` — функции для оценки моделей регрессии и классификации, построения кривых обучения  
+
+---
+
+### `research_notes/`  
+Материалы с анализом, ссылками и отчётами  
+
+- `ea & validation.md` — заметки по применению evolutionary algorithms для дизайна и оптимизации РНК  
+- `performance_baseline.md` — предварительная оценка времени выполнения отдельных компонентов пайплайна  
+- `semester1.pdf` — презентация-отчёт по практике за первый семестр  
+- `semester2.pdf` — презентация-отчёт по практике за второй семестр  
+
+---
+
+### `R/`  
+Код на **R**, используемый для вызова моделей Doench_2016 и обработки данных.  
+Источник: [crispRdesignR](https://github.com/dylanbeeber/crispRdesignR)
+
+---
+
+### `SI/`  
+Код reinforcement learning (A3C) для решения задачи *inverse folding*. Здесь уже кое-что подправлено - насколько я помню, основная проблема была в том, что в методе `create_layers` класса `RNAPolicy` один из слоев создавался с `activation_fn=None`.  
+
+Источник: [P. Eastman et al. (2018) *Solving the RNA design problem with reinforcement learning*](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1006176#sec016)
+
+---
+
+### `research_notes/`  
+Материалы с анализом, ссылками и отчётами  
+
+- `ea & validation.md` — заметки по применению evolutionary algorithms для дизайна и оптимизации РНК  
+- `performance_baseline.md` — предварительная оценка времени выполнения отдельных компонентов пайплайна  
+- `semester1.pdf` — презентация-отчёт по практике за первый семестр  
+- `semester2.pdf` — презентация-отчёт по практике за второй семестр  
 
 
-energy/
-Модель для оценки энергии гибридизации РНК-ДНК, источник: [crisproff](https://github.com/RTH-tools/crisproff/tree/master)
+# Проблемы / зоны роста
 
-models/
-Модели, используемые в проекте
+CRISPR-BERT можно заменить на другую модель
 
-- CRISPR_BERT/ - источник: [CRISPR-BERT](https://github.com/BrokenStringx/CRISPR-BERT)
-- Doench_2016/ - источник: [crispRdesignR](https://github.com/dylanbeeber/crispRdesignR)
-- RA_predictor/ - наша структура и веса
+Можно обратить внимание на [CCLMoff](https://github.com/duwa2/CCLMoff), статья [W. Du et. al. (2025) A versatile CRISPR/Cas9 system off-target prediction tool using language model](https://www.nature.com/articles/s42003-025-08275-6)
 
-modules/ 
-Почти все функции импортируются отсюда
-
-research_notes/
-- ea & validation.md - изыскания насчет вариантов исопльзования EA для дизайна/оптимизации РНК и возможности валидации полцченных последжовательностей
-- performance_baseline.md - предварительная оценка времени выоплнения отдельных компонентов планируемого пайплайна
+Авторы утверждают, что модель SOTA. Стоит проверить, на каких датасетах они сравнивались с другими моделями, и оценить скорость выполнения.
 
 
-## R
+# ПО
+
+- Python 3.10.11
+- R 4.3.2
+
+# R
 
 Download R 4.3.2 from [official website](https://cran.r-project.org/bin/windows/base/old/)
 
@@ -50,21 +115,33 @@ install.packages("package_name")
 - BiocManager
 - Biostrings
 
-## Genome test string
+# Create virtual environment
 
-[UCSC](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=2632616484_CsPsFDwwAeaQyDpaOI3Zux7EqJjX&hgta_geneSeqType=genomic&hgta_doGenePredSequence=submit)
+Clone the repo:
 
-## Reinvorcement Learning
+```powershell
+git clone https://github.com/oreshnya/grna_design_tool.git
+```
 
-Eastman et. al. (2018) [Solving the RNA design problem with reinforcement learning](https://doi.org/10.1371/journal.pcbi.1006176)
+Create virtual environment in project folder:
 
-A3C (Asynchronous Advantage Actor Critic)
+```bash
+python -m venv venv
+```
 
-PPO (Proximal Policy Optimization), an architecture that improves our agent's training stability by avoiding too large policy updates.
+Activate virtual environment:
 
-A3C typically achieves quicker training times, but exhibits greater instability in reward values. Conversely, PPO demonstrates a more stable training process at the expense of longer execution times
+```bash 
+. venv/Scripts/activate
+```
 
-## Ubuntu 20.04 on Windows
+Install required packages:
+
+```bash
+pip install -r requirements.txt
+```
+
+# Ubuntu 20.04 on Windows
 
 На сайте https://store.rg-adguard.net/ вставить ссылку на Ubuntu из Microsoft Store, например:
 
@@ -108,3 +185,7 @@ dism.exe /online /enable-feature /featurename:VirtualMachinePlatform /all /nores
 ```powershell
 wsl --set-default-version 2
 ```
+
+# Genome test string
+
+[UCSC](https://genome.ucsc.edu/cgi-bin/hgTables?hgsid=2632616484_CsPsFDwwAeaQyDpaOI3Zux7EqJjX&hgta_geneSeqType=genomic&hgta_doGenePredSequence=submit)
